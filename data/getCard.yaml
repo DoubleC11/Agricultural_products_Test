@@ -1,0 +1,18 @@
+- baseInfo:
+    api_name: 用户获取购物车
+    url: /api/cart/user/21
+    method: get
+    header:
+      Content-Type: application/json
+#      token: ${get_extract_data(token)}
+  testCase:
+    - case_name: 用户正常获取购物车
+#      data:
+#        userId: 21       #${get_extract_data(userId)}
+#        productId: 7
+#        quantity: 1
+      validation:
+        - contain: { "msg": "成功" }
+        - eq: { "msg": "成功" }
+      extract_lists:
+        cards: $.data[*].product.name

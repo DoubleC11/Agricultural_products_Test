@@ -1,0 +1,17 @@
+- baseInfo:
+    api_name: 用户添加购物车
+    url: /api/cart
+    method: post
+    header:
+      Content-Type: application/json
+      token: ${get_extract_data(token)}
+  testCase:
+    - case_name: 用户正常登陆校验
+      json:
+        userId: 21       #${get_extract_data(userId)}
+        productId: 7
+        quantity: 1
+      validation:
+        - contain: { "msg": "成功" }
+        - eq: { "msg": "成功" }
+        - code: 200

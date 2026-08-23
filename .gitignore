@@ -1,0 +1,7 @@
+./.venv
+.python-version
+.idea
+pyproject.toml
+uv.lock
+reports
+README.md
