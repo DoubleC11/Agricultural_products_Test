@@ -1,4 +1,4 @@
-from asyncio import timeout
+# from asyncio import timeout
 
 import requests
 from utils.handle_data.yaml_handler import read_yaml,write_yaml
