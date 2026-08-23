@@ -5,3 +5,4 @@ pyproject.toml
 uv.lock
 reports
 README.md
+extract.yaml
