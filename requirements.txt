@@ -1,6 +1,6 @@
-allure-pytest>=2.16.0
-jsonpath-ng>=1.8.0
+allure-pytest
+jsonpath-ng
 pytest
-pytest-order>=1.5.0
-pyyaml>=6.0.3
-requests>=2.34.2
+pytest-order
+pyyaml
+requests
