@@ -1,5 +1,4 @@
 import json
-
 from utils.exception_utils.exception import AsserterError
 from jsonpath_ng.ext import parse
 
@@ -44,12 +43,12 @@ class AssertionUtils:
             expr = parse(assert_key)
             titles = [m.value for m in expr.find(response_data)]
             assert_value = assert_value if isinstance(assert_value, str) else str(assert_value)
-            if len(titles) > 0:
+            if titles:
                 response_str = ''.join(titles)
                 if assert_value in response_str:
-                    print(f"断言通过 预期结果【{assert_value}】包含在实际结果【{response_str}】")
+                    print(f"断言通过 预期结果【{assert_value}】包含在实际结果")
                 else:
-                    print(f"断言失败 预期结果【{assert_value}】不包含在实际结果【{response_str}】")
+                    print(f"断言失败 预期结果【{assert_value}】不包含在实际结果】")
                     failure_count += 1
         return failure_count
 
@@ -59,12 +58,16 @@ class AssertionUtils:
         response = response if isinstance(response, dict) else response.json()
         if isinstance(expect_result, dict):
             common_key = expect_result.keys() & response.keys()
-            common_key = list(common_key)[0]
-            new_response_data = {common_key: response[common_key]}
-            if expect_result == new_response_data:
-                print(f"断言通过 预期结果【{expect_result}】等于 实际结果【{new_response_data}】")
+            if common_key:
+                common_key = list(common_key)[0]
+                new_response_data = {common_key: response[common_key]}
+                if expect_result == new_response_data:
+                    print(f"断言通过 预期结果【{expect_result}】等于 实际结果【{new_response_data}】")
+                else:
+                    print(f"断言失败 预期结果【{expect_result}】不等于 实际结果【{new_response_data}】")
+                    failure_count += 1
             else:
-                print(f"断言失败 预期结果【{expect_result}】不等于 实际结果【{new_response_data}】")
+                print("请检查eq是否存在")
                 failure_count += 1
         else:
             print("请确保是字典格式")
@@ -77,12 +80,16 @@ class AssertionUtils:
         response = response if isinstance(response, dict) else response.json()
         if isinstance(expect_result, dict):
             common_key = expect_result.keys() & response.keys()
-            common_key = list(common_key)[0]
-            new_response_data = {common_key: response[common_key]}
-            if expect_result != new_response_data:
-                print(f"断言通过 预期结果【{expect_result}】不等于 实际结果【{new_response_data}】")
+            if common_key:
+                common_key = list(common_key)[0]
+                new_response_data = {common_key: response[common_key]}
+                if expect_result != new_response_data:
+                    print(f"断言通过 预期结果【{expect_result}】不等于 实际结果【{new_response_data}】")
+                else:
+                    print(f"断言失败 预期结果【{expect_result}】等于 实际结果【{new_response_data}】")
+                    failure_count += 1
             else:
-                print(f"断言失败 预期结果【{expect_result}】等于 实际结果【{new_response_data}】")
+                print("请检查eq是否存在")
                 failure_count += 1
         else:
             print("请确保是字典格式")

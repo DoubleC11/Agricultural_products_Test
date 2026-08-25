@@ -13,6 +13,7 @@ class TestCard:
     """
     获取商品
     """
+    pytest.mark.order(1)
     @pytest.mark.parametrize("data", read_yaml("./data/getCard.yaml"))
     def test_get_card(self, data, re_client):
         re_client.excute_test_cases(data)
@@ -20,6 +21,7 @@ class TestCard:
     """
     添加商品
     """
+    pytest.mark.order(2)
     @pytest.mark.parametrize("data", read_yaml("./data/addcard.yaml"))
     def test_add_card(self, data, re_client):
         re_client.excute_test_cases(data)

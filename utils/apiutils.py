@@ -64,7 +64,7 @@ class RequesrsBase:
                 responses = self.r.execute_api_request(api_name=api_name, method=method, url=url, header=header,
                                                        case_name=case_name, **testcase)
                 res_status, res_text = responses.status_code, responses.text
-                print(f"接口响应状态码,【{res_status}】")
+                print(f"接口响应状态码 【{res_status}】")
                 print(f"接口响应数据 {res_text}")
                 if extract is not None:  # 提取数据
                     self.extract_data(extract, responses)
@@ -77,7 +77,6 @@ class RequesrsBase:
                 res_status 状态码
                 """
                 self.assertion.assert_main(validation, responses, res_status)
-
         except Exception as e:
             print("出现未知异常!!! ", e)
             raise e
@@ -85,11 +84,10 @@ class RequesrsBase:
     def extract_data(self, extract, response_data):  # 提取响应数据
         try:
             for key, val in extract.items():
-                if '$' in val:
-                    # jsonpath提取
+                if '$' in val: #jsonpath提取
                     expr = parse(val)
                     titles = [m.value for m in expr.find(response_data.json())]
-                    if len(titles) > 0:
+                    if titles:
                         if len(titles) == 1:
                             write_yaml({key: titles[0]})
                         else:

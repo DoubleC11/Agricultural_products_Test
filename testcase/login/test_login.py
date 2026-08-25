@@ -10,8 +10,8 @@ conf = ConfigParse()
 
 
 class TestLogin:
-    @pytest.mark.order(1)
+    @pytest.mark.order(0)
     @pytest.mark.parametrize("data", read_yaml("./data/login.yaml"))
-    def test_login_demo1(self, data,re_client):
+    def test_login(self, data,re_client):
         re_client.excute_test_cases(data)
 
