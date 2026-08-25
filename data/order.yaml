@@ -1,0 +1,47 @@
+- baseInfo:
+    api_name: 用户下单
+    url: /api/order
+    method: post
+    header:
+      Content-Type: application/json
+  testCase:
+    - case_name: 用户正常下单
+      json:
+        userId: 21
+        productId: 7
+        quantity: 1
+        price: 32.9
+        totalPrice: 32.9
+        recvAddress: 浙江省
+        recvPhone: "15287916723"
+        recvName: cc
+        status: 0
+      validation:
+        - code: 200
+        - contain:
+            msg: 成
+        - eq:
+            msg: 成功
+        - ne:
+            msg: 不成功
+        - db: 'select * from `order` where user_id=21'
+      extract:
+        orderNo: $.data.orderNo
+    - case_name: 用户错误下单修改金额
+      json:
+        userId: 0
+        productId: 7
+        quantity: 1
+        price: 12.9
+        totalPrice: 12.9
+        recvAddress: 浙江省
+        recvPhone: "15287916723"
+        recvName: cc
+        status: 0
+      validation:
+        - code: 200
+        - contain:
+            msg: 创建订单失败
+
+
+
