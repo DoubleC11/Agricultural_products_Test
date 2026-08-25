@@ -1,6 +1,7 @@
 import json
 from utils.exception_utils.exception import AsserterError
 from jsonpath_ng.ext import parse
+from utils.db_connect.mysqlconnect import MysqlConnect
 
 
 class AssertionUtils:
@@ -96,13 +97,31 @@ class AssertionUtils:
             failure_count += 1
         return failure_count
 
+    @classmethod  # 数据库断言
+    def database_assert(self, expect_result, status_code=None) -> int:
+        """
+        :param expect_result: sql语句
+        :param status_code: 状态码不填
+        :return:
+        """
+        failure_count = 0
+        conn = MysqlConnect()
+        db_data = conn.query(expect_result)
+        if db_data:
+            print('数据库断言通过')
+        else:
+            print('数据库断言失败 请检查数据库是否存在该数据')
+            failure_count += 1
+        return failure_count
+
     def assert_main(self, expect_result, response_data, status_code):
         failure_count = 0
         assert_methods = {
             'code': self.statuscode_assert_equal,
             'contain': self.contain_assert,
             'eq': self.eq_assert_equal,
-            'ne': self.ne_assert_equal
+            'ne': self.ne_assert_equal,
+            'db': self.database_assert
         }
         for assert_extract in expect_result:
             for key, value in assert_extract.items():
@@ -116,6 +135,8 @@ class AssertionUtils:
                         results = methods(value, response_data)
                     elif key == 'ne':
                         results = methods(value, response_data)
+                    elif key == 'db':
+                        results = methods(value, status_code)
                     else:
                         results = 0
                     failure_count += results
