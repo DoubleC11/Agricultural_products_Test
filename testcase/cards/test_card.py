@@ -8,26 +8,25 @@ from utils.apiutils import RequesrsBase
 conf = ConfigParse()
 r = RequesrsBase()
 
+
 @allure.feature('商品模块')
 class TestCard:
     """
     获取商品
     """
 
-
     @pytest.mark.order(1)
     @pytest.mark.parametrize("data", read_yaml("./data/getCard.yaml"))
     def test_get_card(self, data, re_client):
-        allure.dynamic.title(data['baseInfo']['api_name'])
-        re_client.excute_test_cases(data)
+        allure.dynamic.title(data[1]['case_name'])
+        re_client.excute_test_cases(data[0], data[1])
 
     """
     添加商品
     """
 
-
     @pytest.mark.order(2)
     @pytest.mark.parametrize("data", read_yaml("./data/addcard.yaml"))
     def test_add_card(self, data, re_client):
-        allure.dynamic.title(data['baseInfo']['api_name'],)
-        re_client.excute_test_cases(data)
+        allure.dynamic.title(data[1]['case_name'])
+        re_client.excute_test_cases(data[0], data[1])

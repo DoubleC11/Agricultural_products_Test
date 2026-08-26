@@ -15,6 +15,6 @@ class TestLogin:
     @allure.issue(url="https:baidu.com")
     @pytest.mark.parametrize("data", read_yaml("./data/login.yaml"))
     def test_login(self, data,re_client):
-        allure.dynamic.title(data['baseInfo']['api_name'])
-        re_client.excute_test_cases(data)
+        allure.dynamic.title(data[1]['case_name'])
 
+        re_client.excute_test_cases(data[0], data[1])

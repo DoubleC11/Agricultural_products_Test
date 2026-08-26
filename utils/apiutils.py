@@ -56,57 +56,61 @@ class RequesrsBase:
             json_str = response_data
         return json_str
 
-    def excute_test_cases(self, api_info):
+    def excute_test_cases(self, api_info, testcase):
         """
          规范yaml接口信息  执行接口 提取结果以及断言操作
         :param api_info:   yaml的接口信息
+        :param testcase:   测试用例
         :return:
         """
         try:
             conf_host = self.conf.get_value("Host", "host")
             allure.attach(conf_host, '接口地址', attachment_type=allure.attachment_type.TEXT)
-            url = conf_host + api_info["baseInfo"]["url"]
-            api_name = api_info["baseInfo"]["api_name"]
+            url = conf_host + api_info["url"]
+            api_name = api_info["api_name"]
             allure.attach(api_name, f'接口名称: {api_name}', attachment_type=allure.attachment_type.TEXT)
-            method = api_info["baseInfo"]["method"]
+            method = api_info["method"]
             allure.attach(method, '请求方式', attachment_type=allure.attachment_type.TEXT)
-            header = api_info["baseInfo"]["header"]
+            header = api_info["header"]
             header = self.parse_and_replace_vaules(header)  # 解析header
             allure.attach(json.dumps(header), '请求头', attachment_type=allure.attachment_type.JSON)
-            for testcase in api_info["testCase"]:
-                case_name = testcase.pop('case_name')
-                allure.attach(case_name, '用例名称', attachment_type=allure.attachment_type.TEXT)
-                validation = self.parse_and_replace_vaules(testcase.pop('validation'))
-                extract = testcase.pop('extract', None)
-                extract_lists = testcase.pop('extract_lists', None)
-                for res_d, res_values in testcase.items():
-                    if res_d in ['json', 'data', 'params']:
-                        allure.attach(res_d, f'参数类型: {res_d}', attachment_type=allure.attachment_type.JSON)
-                        datas = self.parse_and_replace_vaules(res_values)
-                        testcase[res_d] = datas
-                        allure.attach(self.allure_data_(datas), '请求参数', attachment_type=allure.attachment_type.JSON)
-                responses = self.r.execute_api_request(api_name=api_name, method=method, url=url, header=header,
-                                                       case_name=case_name, **testcase)
-                allure.attach(self.allure_data_(responses.json()), '接口实际响应',
-                              attachment_type=allure.attachment_type.JSON)
-                res_status, res_text = responses.status_code, responses.text
+            print(testcase)
+            # for testcase in test_case:
+            case_name = testcase.pop('case_name')
+            allure.attach(case_name, '用例名称', attachment_type=allure.attachment_type.TEXT)
+            validation = self.parse_and_replace_vaules(testcase.pop('validation'))
+            extract = testcase.pop('extract', None)
+            extract_lists = testcase.pop('extract_lists', None)
+            for res_d, res_values in testcase.items():
+                if res_d in ['json', 'data', 'params']:
+                    allure.attach(res_d, f'参数类型: {res_d}', attachment_type=allure.attachment_type.JSON)
+                    datas = self.parse_and_replace_vaules(res_values)
+                    testcase[res_d] = datas
+                    allure.attach(self.allure_data_(datas), '请求参数', attachment_type=allure.attachment_type.JSON)
+            responses = self.r.execute_api_request(api_name=api_name, method=method, url=url, header=header,
+                                                   case_name=case_name, **testcase)
+            allure.attach(self.allure_data_(responses.json()), '接口实际响应',
+                          attachment_type=allure.attachment_type.JSON)
+            res_status, res_text = responses.status_code, responses.text
 
-                print(f"接口响应状态码 【{res_status}】")
-                print(f"接口响应数据 {res_text}")
-                if extract is not None:  # 提取数据
-                    self.extract_data(extract, responses)
-                if extract_lists is not None:
-                    self.extract_data(extract_lists, responses)
-                """
-                断言
-                validation 预期结果
-                responses 响应数据 可以是response类型 也可以是dict类型
-                res_status 状态码
-                """
-                self.assertion.assert_main(validation, responses, res_status)
+            print(f"接口响应状态码 【{res_status}】")
+            print(f"接口响应数据 {res_text}")
+            if extract is not None:  # 提取数据
+                self.extract_data(extract, responses)
+            if extract_lists is not None:
+                self.extract_data(extract_lists, responses)
+            """
+            断言
+            validation 预期结果
+            responses 响应数据 可以是response类型 也可以是dict类型
+            res_status 状态码
+            """
+            self.assertion.assert_main(validation, responses, res_status)
+
         except Exception as e:
             print("出现未知异常!!! ", e)
             raise e
+
 
     def extract_data(self, extract, response_data):  # 提取响应数据
         try:
@@ -129,7 +133,7 @@ class RequesrsBase:
 
 
 if __name__ == "__main__":
-    datas = read_yaml("../data/login.yaml")[0]
+    datas = read_yaml("../data/login.yaml")
     r = RequesrsBase()
     data = r.parse_and_replace_vaules(datas)
-    r.excute_test_cases(data)
+    r.excute_test_cases(data[0][0], data[0][1])

@@ -1,5 +1,5 @@
 - baseInfo:
-    api_name: 用户登陆1
+    api_name: 用户登陆
     url: /api/user/login
     method: post
     header:
@@ -19,39 +19,15 @@
             msg: 不成功
       extract:
         token: $.data.token
-#    - case_name: 用户异常登陆校验
-#      json:
-#        username: admin
-#        password: 123
-#      validation:
-##        - contain:
-#        - code: 200
-#      extract:
-#        token: $.data.token
-- baseInfo:
-    api_name: 用户登陆2
-    url: /api/user/login
-    method: post
-    header:
-      Content-Type: application/json
-  testCase:
-    - case_name: 用户登陆失败密码错误
+    - case_name: 用户异常登陆校验
       json:
-        username: cc
+        username: admin
         password: 123
       validation:
-        - contain: { "msg": "用户不存在" }
-        - eq: { "msg": "用户不存在" }
+        #        - contain:
         - code: 200
       extract:
-        token: $.token
-- baseInfo:
-    api_name: 用户登陆3
-    url: /api/user/login
-    method: post
-    header:
-      Content-Type: application/json
-  testCase:
+        token: $.data.token
     - case_name: 用户登陆失败账号错误
       json:
         username: cc111
@@ -60,7 +36,7 @@
         - contain: { "msg": "用户不存在" }
         - eq: { "msg": "用户不存在" }
         - code: 200
-      extract:
-        token: $.token
+
+
 
 

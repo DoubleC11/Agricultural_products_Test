@@ -10,7 +10,16 @@ file_path = config.File_PATH["extract"]
 def read_yaml(path):
     try:
         with open(path, "r", encoding="utf-8") as f:
-            return yaml.safe_load(f)
+            data = yaml.safe_load(f)
+            new_list = []
+            if len(data) <= 1:
+                data = data[0]
+                baseInfo = data['baseInfo']
+                for v in data['testCase']:
+                    new_list.append([baseInfo, v])
+                return new_list
+            else:
+                return data
     except FileNotFoundError:
         print("文件未找到")
     except Exception as e:
@@ -33,7 +42,7 @@ def write_yaml(value):
 
 def remove_yaml():
     with open(file_path, "w", encoding="utf-8") as f:
-        f.truncate() #清空数据
+        f.truncate()  # 清空数据
 
 
 def read_extract_yaml(node_name, syb_node_name=None):
@@ -51,7 +60,8 @@ def read_extract_yaml(node_name, syb_node_name=None):
 if __name__ == "__main__":
     a = read_yaml("../../data/login.yaml")
     for x in a:
-         print(x)
+        print(x)
+
     # # print(write_yaml({'cb': 123}))
     # # remove_yaml()
     # a=read_extract_yaml("foods")
