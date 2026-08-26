@@ -8,6 +8,7 @@ from utils.send_requests import Send_Requests
 from utils.assertion_utils import AssertionUtils
 import json
 from jsonpath_ng.ext import parse
+import allure
 
 
 class RequesrsBase:
@@ -40,6 +41,20 @@ class RequesrsBase:
 
         return datas
 
+    """
+    字典转字符串格式化
+    """
+    def allure_data_(self, response_data):
+        if isinstance(response_data, dict):
+            json_str = json.dumps(response_data, ensure_ascii=False, indent=4)
+            """
+             ensure_ascii=False 允许中文
+             indent 格式化
+            """
+        else:
+            json_str = response_data
+        return json_str
+
     def excute_test_cases(self, api_info):
         """
          规范yaml接口信息  执行接口 提取结果以及断言操作
@@ -48,12 +63,18 @@ class RequesrsBase:
         """
         try:
             conf_host = self.conf.get_value("Host", "host")
+            allure.attach(conf_host, '接口地址', attachment_type=allure.attachment_type.TEXT)
             url = conf_host + api_info["baseInfo"]["url"]
             api_name = api_info["baseInfo"]["api_name"]
+            allure.attach(api_name, f'接口名称: {api_name}', attachment_type=allure.attachment_type.TEXT)
             method = api_info["baseInfo"]["method"]
+            allure.attach(method, '请求方式', attachment_type=allure.attachment_type.TEXT)
             header = api_info["baseInfo"]["header"]
+            header = self.parse_and_replace_vaules(header) #解析header
+            allure.attach(json.dumps(header), '请求头', attachment_type=allure.attachment_type.JSON)
             for testcase in api_info["testCase"]:
                 case_name = testcase.pop('case_name')
+                allure.attach(case_name, '用例名称', attachment_type=allure.attachment_type.TEXT)
                 validation = self.parse_and_replace_vaules(testcase.pop('validation'))
                 extract = testcase.pop('extract', None)
                 extract_lists = testcase.pop('extract_lists', None)
@@ -63,7 +84,10 @@ class RequesrsBase:
                         testcase[res_d] = datas
                 responses = self.r.execute_api_request(api_name=api_name, method=method, url=url, header=header,
                                                        case_name=case_name, **testcase)
+                allure.attach(self.allure_data_(responses.json()), '接口实际响应',
+                              attachment_type=allure.attachment_type.JSON)
                 res_status, res_text = responses.status_code, responses.text
+
                 print(f"接口响应状态码 【{res_status}】")
                 print(f"接口响应数据 {res_text}")
                 if extract is not None:  # 提取数据
@@ -84,7 +108,7 @@ class RequesrsBase:
     def extract_data(self, extract, response_data):  # 提取响应数据
         try:
             for key, val in extract.items():
-                if '$' in val: #jsonpath提取
+                if '$' in val:  # jsonpath提取
                     expr = parse(val)
                     titles = [m.value for m in expr.find(response_data.json())]
                     if titles:

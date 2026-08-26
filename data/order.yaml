@@ -4,6 +4,7 @@
     method: post
     header:
       Content-Type: application/json
+      token: ${get_extract_data(token)}
   testCase:
     - case_name: 用户正常下单
       json:
