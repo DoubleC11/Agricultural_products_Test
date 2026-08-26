@@ -29,5 +29,5 @@ class TestCard:
     @pytest.mark.order(2)
     @pytest.mark.parametrize("data", read_yaml("./data/addcard.yaml"))
     def test_add_card(self, data, re_client):
-        allure.dynamic.title(data['baseInfo']['api_name'])
+        allure.dynamic.title(data['baseInfo']['api_name'],)
         re_client.excute_test_cases(data)

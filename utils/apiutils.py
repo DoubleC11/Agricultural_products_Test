@@ -44,6 +44,7 @@ class RequesrsBase:
     """
     字典转字符串格式化
     """
+
     def allure_data_(self, response_data):
         if isinstance(response_data, dict):
             json_str = json.dumps(response_data, ensure_ascii=False, indent=4)
@@ -70,7 +71,7 @@ class RequesrsBase:
             method = api_info["baseInfo"]["method"]
             allure.attach(method, '请求方式', attachment_type=allure.attachment_type.TEXT)
             header = api_info["baseInfo"]["header"]
-            header = self.parse_and_replace_vaules(header) #解析header
+            header = self.parse_and_replace_vaules(header)  # 解析header
             allure.attach(json.dumps(header), '请求头', attachment_type=allure.attachment_type.JSON)
             for testcase in api_info["testCase"]:
                 case_name = testcase.pop('case_name')
@@ -80,8 +81,10 @@ class RequesrsBase:
                 extract_lists = testcase.pop('extract_lists', None)
                 for res_d, res_values in testcase.items():
                     if res_d in ['json', 'data', 'params']:
+                        allure.attach(res_d, f'参数类型: {res_d}', attachment_type=allure.attachment_type.JSON)
                         datas = self.parse_and_replace_vaules(res_values)
                         testcase[res_d] = datas
+                        allure.attach(self.allure_data_(datas), '请求参数', attachment_type=allure.attachment_type.JSON)
                 responses = self.r.execute_api_request(api_name=api_name, method=method, url=url, header=header,
                                                        case_name=case_name, **testcase)
                 allure.attach(self.allure_data_(responses.json()), '接口实际响应',
