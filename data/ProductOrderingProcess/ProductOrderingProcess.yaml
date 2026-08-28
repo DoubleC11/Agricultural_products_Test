@@ -1,0 +1,88 @@
+- baseInfo:
+    api_name: 用户登陆
+    url: /api/user/login
+    method: post
+    header:
+      Content-Type: application/json
+  testCase:
+    - case_name: 用户正常登陆校验
+      json:
+        username: testdemo
+        password: 123456
+      validation:
+        - code: 200
+        - contain:
+            msg: 成
+        - eq:
+            msg: 成功
+        - ne:
+            msg: 不成功
+      extract:
+        token: $.data.token
+        userId: $.data.id
+- baseInfo:
+    api_name: 用户添加购物车
+    url: /api/cart
+    method: post
+    header:
+      Content-Type: application/json
+      token: ${get_extract_data(token)}
+  testCase:
+    - case_name: 用户正常添加购物车
+      json:
+        userId: ${get_extract_data(userId)}  #${get_extract_data(userId)}
+        productId: 7
+        quantity: 1
+      validation:
+        - contain: { "msg": "成功" }
+        - eq: { "msg": "成功" }
+        - code: 200
+- baseInfo:
+    api_name: 用户下单
+    url: /api/order
+    method: post
+    header:
+      Content-Type: application/json
+      token: ${get_extract_data(token)}
+  testCase:
+    - case_name: 用户正常下单
+      json:
+        userId: 38
+        productId: 7
+        quantity: 1
+        price: 32.9
+        totalPrice: 32.9
+        recvAddress: 浙江省绍兴市xxx
+        recvPhone: "15265782877"
+        recvName: cc
+        status: 0
+      validation:
+        - code: 200
+        - contain:
+            msg: 成
+        - eq:
+            msg: 成功
+        - db: 'select * from `order` where user_id=${get_extract_data(userId)}'
+      extract:
+        orderId: $.data.id
+- baseInfo:
+    api_name: 用户付款
+    url: /api/order/${get_extract_data(orderId)}/status?status=1
+    method: put
+    header:
+      Content-Type: application/json
+      token: ${get_extract_data(token)}
+  testCase:
+    - case_name: 用户付款
+      json:
+        status: 1
+      validation:
+        - code: 200
+        - contain:
+            msg: 成
+        - eq:
+            msg: 成功
+        - db: 'select * from `order` where user_id=${get_extract_data(userId)} and status=1 and id=${get_extract_data(orderId)}'
+      extract:
+        orderNo: $.data.id
+

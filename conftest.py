@@ -5,7 +5,10 @@ import requests
 from utils.send_requests import Send_Requests
 from utils.handle_data.yaml_handler import remove_yaml
 from utils.apiutils import RequesrsBase
+from utils.dingding_sendmsg import send_custom_robot_group_message
 import time
+from config.base_config import DINGTALK_SECRET, DINGTALK_WEBHOOK, is_dingding, is_all
+
 
 @pytest.fixture(autouse=True, scope='session')
 def re_client():
@@ -26,11 +29,10 @@ def print_Info():
     print("-" * 10 + "测试结束" + "-" * 10)
 
 
-
-
 # 全局变量，用于在会话开始时记录数据
 _session_start_time = None
 _collected_count = 0
+
 
 def pytest_sessionstart(session):
     """会话开始时记录开始时间和收集到的用例总数"""
@@ -38,6 +40,7 @@ def pytest_sessionstart(session):
     _session_start_time = time.monotonic()
     # session.items 包含了所有收集到的测试用例（Item 对象）
     _collected_count = len(session.items)
+
 
 def pytest_terminal_summary(terminalreporter, exitstatus, config):
     """自定义测试结果汇总输出"""
@@ -63,10 +66,27 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
     # 5. 计算成功率
     rate = (passed / executed * 100) if executed else 0.0
 
+    resluts = {
+        '收集测试用例': collected,
+        '执行测试用例': executed,
+        '通过用例数': passed,
+        '失败用例数': failed,
+        '报错用例数': error,
+        '跳过用例数': skipped,
+        '用例成功率': rate,
+        '执行用例时间': str(round(duration,2))+'s'
+    }
+    print(resluts)
+
     # 6. 输出结果（保持您原来的格式）
-    terminalreporter.write_sep("-", "用例统计")
-    terminalreporter.write_line(f"收集用例: {collected}")
-    terminalreporter.write_line(f"执行用例: {executed}")
-    terminalreporter.write_line(f"通过: {passed}  失败: {failed}  报错: {error}  跳过: {skipped}")
-    terminalreporter.write_line(f"成功率: {rate:.2f}%")
-    terminalreporter.write_line(f"总用时: {duration:.2f} 秒")
+    # terminalreporter.write_sep("-", "用例统计")
+    # terminalreporter.write_line(f"收集用例: {collected}")
+    # terminalreporter.write_line(f"执行用例: {executed}")
+    # terminalreporter.write_line(f"通过: {passed}  失败: {failed}  报错: {error}  跳过: {skipped}")
+    # terminalreporter.write_line(f"成功率: {rate:.2f}%")
+    # terminalreporter.write_line(f"总用时: {duration:.2f} 秒")
+    if is_dingding:
+        res = send_custom_robot_group_message(access_token=DINGTALK_WEBHOOK, secret=DINGTALK_SECRET, msg=resluts,
+                                              is_at_all=is_all)
+        if res.get('errmsg') == "ok":
+            print("钉钉推送成功")

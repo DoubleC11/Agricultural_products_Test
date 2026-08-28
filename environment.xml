@@ -1,0 +1,26 @@
+<environment>
+    <parameter>
+        <key>
+            system
+        </key>
+        <value>
+            Mac os
+        </value>
+    </parameter>
+    <parameter>
+        <key>
+            python
+        </key>
+        <value>
+            python 3.13
+        </value>
+    </parameter>
+    <parameter>
+        <key>
+            农产品信息管理系统
+        </key>
+        <value>
+            接口自动化测试
+        </value>
+    </parameter>
+</environment>
