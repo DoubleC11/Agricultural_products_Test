@@ -2,6 +2,7 @@ import json
 from utils.exception_utils.exception import AsserterError
 from jsonpath_ng.ext import parse
 from utils.db_connect.mysqlconnect import MysqlConnect
+import allure
 
 
 class AssertionUtils:
@@ -26,8 +27,12 @@ class AssertionUtils:
         failure_count = 0  # 断言标识码 0 表示成功 其他表示失败
         if expect_result == status_code:
             print(f"断言通过 接口实际返回状态码【{expect_result}】==【{status_code}】")
+            allure.attach(f"断言通过 接口实际返回状态码【{expect_result}】==【{status_code}】", '状态码断言通过',
+                          attachment_type=allure.attachment_type.TEXT)
         else:
-            print(f"断言通过 接口实际返回状态码{expect_result}!={status_code}")
+            print(f"断言失败 接口实际返回状态码{expect_result}!={status_code}")
+            allure.attach(f"断言失败 接口实际返回状态码【{expect_result}】!=【{status_code}】", '状态码断言失败',
+                          attachment_type=allure.attachment_type.TEXT)
             failure_count += 1
         return failure_count
 
@@ -48,8 +53,14 @@ class AssertionUtils:
                 response_str = ''.join(titles)
                 if assert_value in response_str:
                     print(f"断言通过 预期结果【{assert_value}】包含在实际结果")
+                    allure.attach(f"断言通过 预期结果【{assert_value}】包含在实际结果", "包含断言通过",
+                                  attachment_type=allure.attachment_type.TEXT)
+
                 else:
                     print(f"断言失败 预期结果【{assert_value}】不包含在实际结果】")
+                    allure.attach(f"断言失败 预期结果【{assert_value}】不包含在实际结果】", '包含断言失败',
+                                  attachment_type=allure.attachment_type.TEXT)
+
                     failure_count += 1
         return failure_count
 
@@ -64,8 +75,16 @@ class AssertionUtils:
                 new_response_data = {common_key: response[common_key]}
                 if expect_result == new_response_data:
                     print(f"断言通过 预期结果【{expect_result}】等于 实际结果【{new_response_data}】")
+                    allure.attach(f"断言通过 预期结果【{expect_result}】等于 实际结果【{new_response_data}】",
+                                  '相等断言通过',
+                                  attachment_type=allure.attachment_type.TEXT)
+
                 else:
                     print(f"断言失败 预期结果【{expect_result}】不等于 实际结果【{new_response_data}】")
+                    allure.attach(f"断言失败 预期结果【{expect_result}】不等于 实际结果【{new_response_data}】",
+                                  '相等断言失败',
+                                  attachment_type=allure.attachment_type.TEXT)
+
                     failure_count += 1
             else:
                 print("请检查eq是否存在")
@@ -86,8 +105,15 @@ class AssertionUtils:
                 new_response_data = {common_key: response[common_key]}
                 if expect_result != new_response_data:
                     print(f"断言通过 预期结果【{expect_result}】不等于 实际结果【{new_response_data}】")
+                    allure.attach(f"断言通过 预期结果【{expect_result}】不等于 实际结果【{new_response_data}】",
+                                  '不相等断言通过',
+                                  attachment_type=allure.attachment_type.TEXT)
+
                 else:
                     print(f"断言失败 预期结果【{expect_result}】等于 实际结果【{new_response_data}】")
+                    allure.attach(f"断言失败 预期结果【{expect_result}】等于 实际结果【{new_response_data}】",
+                                  '不相等断言失败',
+                                  attachment_type=allure.attachment_type.TEXT)
                     failure_count += 1
             else:
                 print("请检查eq是否存在")
@@ -105,12 +131,21 @@ class AssertionUtils:
         :return:
         """
         failure_count = 0
+
         conn = MysqlConnect()
         db_data = conn.query(expect_result)
+
         if db_data:
+            allure.attach(f"断言通过 查询结果存在",
+                          '数据库断言通过',
+                          attachment_type=allure.attachment_type.TEXT)
             print('数据库断言通过')
+
         else:
             print('数据库断言失败 请检查数据库是否存在该数据')
+            allure.attach(f"断言失败 查询结果不存在",
+                          '数据库断言失败',
+                          attachment_type=allure.attachment_type.TEXT)
             failure_count += 1
         return failure_count
 

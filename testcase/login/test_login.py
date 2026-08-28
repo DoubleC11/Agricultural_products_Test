@@ -13,8 +13,7 @@ conf = ConfigParse()
 class TestLogin:
     @pytest.mark.order(0)
     @allure.issue(url="https:baidu.com")
-    @pytest.mark.parametrize("data", read_yaml("./data/login.yaml"))
-    def test_login(self, data,re_client):
-        allure.dynamic.title(data[1]['case_name'])
-
-        re_client.excute_test_cases(data[0], data[1])
+    @pytest.mark.parametrize("baseInfo,test_case", read_yaml("./data/login.yaml"))
+    def test_login(self, baseInfo, test_case, re_client):
+        allure.dynamic.title(test_case['case_name'])
+        re_client.excute_test_cases(baseInfo, test_case)

@@ -18,6 +18,7 @@ class RequesrsBase:
         self.r = Send_Requests()
         self.assertion = AssertionUtils()
 
+
     def parse_and_replace_vaules(self, vaules):
         yml_data_str = vaules if isinstance(vaules, str) else json.dumps(vaules, ensure_ascii=False)
         # print("解析之前 ", yml_data_str)
@@ -65,22 +66,29 @@ class RequesrsBase:
         """
         try:
             conf_host = self.conf.get_value("Host", "host")
-            allure.attach(conf_host, '接口地址', attachment_type=allure.attachment_type.TEXT)
+            api_info["url"] = self.parse_and_replace_vaules(api_info["url"])
             url = conf_host + api_info["url"]
+            allure.attach(url, '接口地址', attachment_type=allure.attachment_type.TEXT)
+
             api_name = api_info["api_name"]
             allure.attach(api_name, f'接口名称: {api_name}', attachment_type=allure.attachment_type.TEXT)
+
             method = api_info["method"]
             allure.attach(method, '请求方式', attachment_type=allure.attachment_type.TEXT)
+
             header = api_info["header"]
             header = self.parse_and_replace_vaules(header)  # 解析header
             allure.attach(json.dumps(header), '请求头', attachment_type=allure.attachment_type.JSON)
-            print(testcase)
+
             # for testcase in test_case:
             case_name = testcase.pop('case_name')
             allure.attach(case_name, '用例名称', attachment_type=allure.attachment_type.TEXT)
+
             validation = self.parse_and_replace_vaules(testcase.pop('validation'))
+            print(validation)
             extract = testcase.pop('extract', None)
             extract_lists = testcase.pop('extract_lists', None)
+
             for res_d, res_values in testcase.items():
                 if res_d in ['json', 'data', 'params']:
                     allure.attach(res_d, f'参数类型: {res_d}', attachment_type=allure.attachment_type.JSON)
@@ -110,7 +118,6 @@ class RequesrsBase:
         except Exception as e:
             print("出现未知异常!!! ", e)
             raise e
-
 
     def extract_data(self, extract, response_data):  # 提取响应数据
         try:

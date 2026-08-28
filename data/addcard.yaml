@@ -6,7 +6,7 @@
       Content-Type: application/json
       token: ${get_extract_data(token)}
   testCase:
-    - case_name: 用户正常登陆校验
+    - case_name: 用户正常添加购物车
       json:
         userId: 21       #${get_extract_data(userId)}
         productId: 7

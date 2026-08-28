@@ -16,17 +16,17 @@ class TestCard:
     """
 
     @pytest.mark.order(1)
-    @pytest.mark.parametrize("data", read_yaml("./data/getCard.yaml"))
-    def test_get_card(self, data, re_client):
-        allure.dynamic.title(data[1]['case_name'])
-        re_client.excute_test_cases(data[0], data[1])
+    @pytest.mark.parametrize("baseInfo,test_case", read_yaml("./data/getCard.yaml"))
+    def test_get_card(self, baseInfo,test_case, re_client):
+        allure.dynamic.title(test_case['case_name'])
+        re_client.excute_test_cases(baseInfo, test_case)
 
     """
     添加商品
     """
 
     @pytest.mark.order(2)
-    @pytest.mark.parametrize("data", read_yaml("./data/addcard.yaml"))
-    def test_add_card(self, data, re_client):
-        allure.dynamic.title(data[1]['case_name'])
-        re_client.excute_test_cases(data[0], data[1])
+    @pytest.mark.parametrize("baseInfo,test_case", read_yaml("./data/addcard.yaml"))
+    def test_add_card(self, baseInfo,test_case, re_client):
+        allure.dynamic.title(test_case['case_name'])
+        re_client.excute_test_cases(baseInfo, test_case)
