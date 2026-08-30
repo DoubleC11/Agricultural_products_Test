@@ -9,6 +9,8 @@ from utils.assertion_utils import AssertionUtils
 import json
 from jsonpath_ng.ext import parse
 import allure
+from utils.logger_utils.recording import h
+
 
 
 class RequesrsBase:
@@ -17,7 +19,6 @@ class RequesrsBase:
         self.conf = ConfigParse()
         self.r = Send_Requests()
         self.assertion = AssertionUtils()
-
 
     def parse_and_replace_vaules(self, vaules):
         yml_data_str = vaules if isinstance(vaules, str) else json.dumps(vaules, ensure_ascii=False)
@@ -116,7 +117,7 @@ class RequesrsBase:
             self.assertion.assert_main(validation, responses, res_status)
 
         except Exception as e:
-            print("出现未知异常!!! ", e)
+            h.error("出现未知异常!!! ", e)
             raise e
 
     def extract_data(self, extract, response_data):  # 提取响应数据
@@ -130,13 +131,14 @@ class RequesrsBase:
                             write_yaml({key: titles[0]})
                         else:
                             write_yaml({key: titles})
-                        print(f"成功提取数据【{key}】")
+                        h.info(f"成功提取数据【{key}】")
                     else:
-                        print("未提取到数据")
+                        h.error("未提取到数据")
         except json.decoder.JSONDecodeError:
-            print("json解析错误 请检查yaml文件extract表达式是否正确")
+            # print("json解析错误 请检查yaml文件extract表达式是否正确")
+            h.error("json解析错误 请检查yaml文件extract表达式是否正确")
         except Exception as e:
-            print(f"出现错误：{e}")
+            h.error(f"出现错误：{e}")
 
 
 if __name__ == "__main__":

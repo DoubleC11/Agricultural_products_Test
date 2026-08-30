@@ -3,6 +3,7 @@ from utils.exception_utils.exception import AsserterError
 from jsonpath_ng.ext import parse
 from utils.db_connect.mysqlconnect import MysqlConnect
 import allure
+from utils.logger_utils.recording import h
 
 
 class AssertionUtils:
@@ -26,11 +27,11 @@ class AssertionUtils:
         """
         failure_count = 0  # 断言标识码 0 表示成功 其他表示失败
         if expect_result == status_code:
-            print(f"断言通过 接口实际返回状态码【{expect_result}】==【{status_code}】")
+            h.info(f"断言通过 接口实际返回状态码【{expect_result}】==【{status_code}】")
             allure.attach(f"断言通过 接口实际返回状态码【{expect_result}】==【{status_code}】", '状态码断言通过',
                           attachment_type=allure.attachment_type.TEXT)
         else:
-            print(f"断言失败 接口实际返回状态码{expect_result}!={status_code}")
+            h.error(f"断言失败 接口实际返回状态码{expect_result}!={status_code}")
             allure.attach(f"断言失败 接口实际返回状态码【{expect_result}】!=【{status_code}】", '状态码断言失败',
                           attachment_type=allure.attachment_type.TEXT)
             failure_count += 1
@@ -52,12 +53,12 @@ class AssertionUtils:
             if titles:
                 response_str = ''.join(titles)
                 if assert_value in response_str:
-                    print(f"断言通过 预期结果【{assert_value}】包含在实际结果")
+                    h.info(f"断言通过 预期结果【{assert_value}】包含在实际结果")
                     allure.attach(f"断言通过 预期结果【{assert_value}】包含在实际结果", "包含断言通过",
                                   attachment_type=allure.attachment_type.TEXT)
 
                 else:
-                    print(f"断言失败 预期结果【{assert_value}】不包含在实际结果】")
+                    h.error(f"断言失败 预期结果【{assert_value}】不包含在实际结果】")
                     allure.attach(f"断言失败 预期结果【{assert_value}】不包含在实际结果】", '包含断言失败',
                                   attachment_type=allure.attachment_type.TEXT)
 
@@ -74,23 +75,23 @@ class AssertionUtils:
                 common_key = list(common_key)[0]
                 new_response_data = {common_key: response[common_key]}
                 if expect_result == new_response_data:
-                    print(f"断言通过 预期结果【{expect_result}】等于 实际结果【{new_response_data}】")
+                    h.info(f"断言通过 预期结果【{expect_result}】等于 实际结果【{new_response_data}】")
                     allure.attach(f"断言通过 预期结果【{expect_result}】等于 实际结果【{new_response_data}】",
                                   '相等断言通过',
                                   attachment_type=allure.attachment_type.TEXT)
 
                 else:
-                    print(f"断言失败 预期结果【{expect_result}】不等于 实际结果【{new_response_data}】")
+                    h.error(f"断言失败 预期结果【{expect_result}】不等于 实际结果【{new_response_data}】")
                     allure.attach(f"断言失败 预期结果【{expect_result}】不等于 实际结果【{new_response_data}】",
                                   '相等断言失败',
                                   attachment_type=allure.attachment_type.TEXT)
 
                     failure_count += 1
             else:
-                print("请检查eq是否存在")
+                h.error("请检查eq是否存在")
                 failure_count += 1
         else:
-            print("请确保是字典格式")
+            h.error("请确保是字典格式")
             failure_count += 1
         return failure_count
 
@@ -104,22 +105,22 @@ class AssertionUtils:
                 common_key = list(common_key)[0]
                 new_response_data = {common_key: response[common_key]}
                 if expect_result != new_response_data:
-                    print(f"断言通过 预期结果【{expect_result}】不等于 实际结果【{new_response_data}】")
+                    h.info(f"断言通过 预期结果【{expect_result}】不等于 实际结果【{new_response_data}】")
                     allure.attach(f"断言通过 预期结果【{expect_result}】不等于 实际结果【{new_response_data}】",
                                   '不相等断言通过',
                                   attachment_type=allure.attachment_type.TEXT)
 
                 else:
-                    print(f"断言失败 预期结果【{expect_result}】等于 实际结果【{new_response_data}】")
+                    h.error(f"断言失败 预期结果【{expect_result}】等于 实际结果【{new_response_data}】")
                     allure.attach(f"断言失败 预期结果【{expect_result}】等于 实际结果【{new_response_data}】",
                                   '不相等断言失败',
                                   attachment_type=allure.attachment_type.TEXT)
                     failure_count += 1
             else:
-                print("请检查eq是否存在")
+                h.error("请检查eq是否存在")
                 failure_count += 1
         else:
-            print("请确保是字典格式")
+            h.error("请确保是字典格式")
             failure_count += 1
         return failure_count
 
@@ -139,10 +140,10 @@ class AssertionUtils:
             allure.attach(f"断言通过 查询结果存在",
                           '数据库断言通过',
                           attachment_type=allure.attachment_type.TEXT)
-            print('数据库断言通过')
+            h.info('数据库断言通过')
 
         else:
-            print('数据库断言失败 请检查数据库是否存在该数据')
+            h.error('数据库断言失败 请检查数据库是否存在该数据')
             allure.attach(f"断言失败 查询结果不存在",
                           '数据库断言失败',
                           attachment_type=allure.attachment_type.TEXT)
@@ -176,7 +177,7 @@ class AssertionUtils:
                         results = 0
                     failure_count += results
                 else:
-                    # print(f"不支持当前断言模式{methods} ")
+                    h.error(f"不支持当前断言模式{methods} ")
                     raise AsserterError(f"不支持当前断言模式{key}!!!")
 
         assert failure_count == 0, "测试失败"
