@@ -18,7 +18,7 @@ class MysqlConnect:
             self.conn = pymysql.connect(**self.conf)
             # 获取操作游标 cursor=pymysql.cursors.DictCursor 可以获取数据库的属性 以key：value 显示结果
             self.cursor = self.conn.cursor(cursor=pymysql.cursors.DictCursor)
-            print(f'成功连接数据库{self.conf['database']}')
+            print(f"成功连接数据库{self.conf['database']}")
         except Exception as e:
             print(f'连接失败原因{e} ')
 
