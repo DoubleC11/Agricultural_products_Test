@@ -38,6 +38,6 @@ def send_custom_robot_group_message(access_token, secret, msg, at_user_ids=None,
 
 
 if __name__ == '__main__':
-    DINGTALK_WEBHOOK = "4ab1fddffdf947bc6fe632ee1988c618d84b53246cb8484e8852a906c3565791"
-    DINGTALK_SECRET = "SEC1d9ab9542807e9b0feb45a42fac2ffddde105393e534b6ea10e13bdf977a7df2"  # 如果机器人开启了
+    DINGTALK_WEBHOOK = ""
+    DINGTALK_SECRET = ""  # 如果机器人开启了
     print(send_custom_robot_group_message(access_token=DINGTALK_WEBHOOK, secret=DINGTALK_SECRET, msg="你好"))
