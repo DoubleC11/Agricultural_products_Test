@@ -1,9 +1,11 @@
-./.venv
+.venv/
 .python-version
-.idea
+.idea/
 pyproject.toml
 uv.lock
-reports
-README.md
+reports/
+__pycache__/
+*.py[cod]
+.pytest_cache/
 extract.yaml
-logs
+logs/
